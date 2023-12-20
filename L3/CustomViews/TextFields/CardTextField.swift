@@ -8,7 +8,7 @@
 import UIKit
 
 enum TextFieldComponents {
-    case border, underline, counter, switcher, placehonder, title
+    case border, underline, counter, switcher, placehonder, title, text
 }
 
 class CardTextField: UIView {
@@ -16,6 +16,15 @@ class CardTextField: UIView {
     enum Const {
         static let padding: CGFloat = 10
     }
+    
+    // colors
+    private var defaultTextColor: UIColor = .black
+    private var defaultBorderColor: UIColor = .lightGray
+    private var defaultUnderlineColor: UIColor = .green
+    private var defaultCounterColor: UIColor = .black
+    private var defaultSwitcherColor: UIColor = .green
+    private var defaultPlacehonderColor: UIColor = .lightGray
+    private var defaultTitleColor: UIColor = .lightGray
     
     var textField = BaseTextField()
     private var counter = UILabel()
@@ -42,7 +51,7 @@ class CardTextField: UIView {
         
         return errorMessage
     }()
-    private var borderColor: UIColor = UIColor.lightGray {
+    private var textFieldBorderColor: UIColor = UIColor.lightGray {
         didSet {
             setNeedsDisplay()
         }
@@ -63,7 +72,7 @@ class CardTextField: UIView {
     }
     
     override func draw(_ rect: CGRect) {
-        borderColor.set()
+        textFieldBorderColor.set()
         UIBezierPath(roundedRect: CGRectInset(self.bounds, 0.5, 0.5), cornerRadius: 10).stroke()
     }
     
@@ -106,18 +115,27 @@ class CardTextField: UIView {
     func onChangeComponentColour(for item: TextFieldComponents, with color: UIColor) {
         switch item {
         case .border:
-            borderColor = color
+            textFieldBorderColor = color
+            defaultBorderColor = color
         case .counter:
             counter.textColor = color
+            defaultCounterColor = color
         case .underline:
             bottomBorder.backgroundColor = color
+            defaultBorderColor = color
         case .switcher:
             switcher.onTintColor = color
+            defaultSwitcherColor = color
         case .placehonder:
             let attributedPlaceholder = NSAttributedString(string: Constants.textFieldPlaceholder, attributes: [NSAttributedString.Key.foregroundColor: color])
             textField.attributedPlaceholder = attributedPlaceholder
+            defaultPlacehonderColor = color
         case .title:
             titleLabel.textColor = color
+            defaultTitleColor = color
+        case .text:
+            textField.textColor = color
+            defaultTextColor = color
         }
     }
     
@@ -160,7 +178,7 @@ class CardTextField: UIView {
     }
     
     private func showValidationError() {
-        borderColor = .red
+        textFieldBorderColor = .red
         errorMessage.isHidden = false
         textField.textColor = .red
         counter.textColor = .red
@@ -174,12 +192,12 @@ class CardTextField: UIView {
     }
     
     private func hideValidationError() {
-        borderColor = .lightGray
+        textFieldBorderColor = defaultBorderColor
+        textField.textColor = defaultTextColor
+        counter.textColor = defaultCounterColor
+        titleLabel.textColor = defaultTitleColor
+        bottomBorder.backgroundColor = defaultUnderlineColor
         errorMessage.isHidden = true
-        textField.textColor = .black
-        counter.textColor = .black
-        titleLabel.textColor = .gray
-        bottomBorder.backgroundColor = .systemGreen
         
         errorMessageHeightAnchor?.isActive = true
         UIView.animate(withDuration: 0.1) {
