@@ -18,7 +18,7 @@ class BaseTextField: UITextField {
         super.init(coder: coder)
     }
     
-    func configure() {
+    private func configure() {
         translatesAutoresizingMaskIntoConstraints = false
         adjustsFontSizeToFitWidth = true
         placeholder = Constants.textFieldPlaceholder
