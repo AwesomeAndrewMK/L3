@@ -23,13 +23,88 @@ class CardTextField: UIView {
         static let titleLabelTopPadding: CGFloat = -7
     }
     
-    private var defaultTextColor: UIColor = .black
-    private var defaultBorderColor: UIColor = .lightGray
-    private var defaultUnderlineColor: UIColor = .green
-    private var defaultCounterColor: UIColor = .black
-    private var defaultSwitcherColor: UIColor = .green
-    private var defaultPlacehonderColor: UIColor = .lightGray
-    private var defaultTitleColor: UIColor = .lightGray
+    private enum State {
+        case error, active, inactive
+        
+        var counerColor: UIColor {
+            switch self {
+            case .error:
+                return .red
+            case .active:
+                return .black
+            case .inactive:
+                return .black
+            }
+        }
+        var titleColor: UIColor {
+            switch self {
+            case .error:
+                return .red
+            case .active:
+                return .black
+            case .inactive:
+                return .lightGray
+            }
+        }
+        var textColor: UIColor {
+            switch self {
+            case .error:
+                return .red
+            case .active:
+                return .black
+            case .inactive:
+                return .black
+            }
+        }
+        var switcherColor: UIColor {
+            switch self {
+            case .error:
+                return .red
+            case .active:
+                return .black
+            case .inactive:
+                return .green
+            }
+        }
+        var borderColor: UIColor {
+            switch self {
+            case .error:
+                return .red
+            case .active:
+                return .black
+            case .inactive:
+                return .lightGray
+            }
+        }
+        var underlineColor: UIColor {
+            switch self {
+            case .error:
+                return .red
+            case .active:
+                return .black
+            case .inactive:
+                return .green
+            }
+        }
+        var placehonderColor: UIColor {
+            switch self {
+            case .error:
+                return .red
+            case .active:
+                return .black
+            case .inactive:
+                return .lightGray
+            }
+        }
+    }
+    
+//    private var defaultTextColor: UIColor = .black
+//    private var defaultBorderColor: UIColor = .lightGray
+//    private var defaultUnderlineColor: UIColor = .green
+//    private var defaultCounterColor: UIColor = .black
+//    private var defaultSwitcherColor: UIColor = .green
+//    private var defaultPlacehonderColor: UIColor = .lightGray
+//    private var defaultTitleColor: UIColor = .lightGray
     
     private var counterLabel = UILabel()
     private var bottomBorder = UIView()
@@ -44,6 +119,7 @@ class CardTextField: UIView {
     
     lazy var textField: BaseTextField = {
         let textField = BaseTextField()
+        textField.textColor = State.inactive.textColor
         textField.delegate = self
         
         return textField
@@ -52,7 +128,7 @@ class CardTextField: UIView {
     private var titleLabel: UILabel = {
         let titleLabel = UILabel()
         titleLabel.text = " Card number "
-        titleLabel.textColor = .gray
+        titleLabel.textColor = State.inactive.titleColor
         titleLabel.font = UIFont.systemFont(ofSize: 12)
         titleLabel.isHidden = true
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -71,7 +147,7 @@ class CardTextField: UIView {
         return errorMessage
     }()
     
-    private var textFieldBorderColor: UIColor = UIColor.lightGray {
+    private var textFieldBorderColor: UIColor = State.inactive.borderColor {
         didSet {
             setNeedsDisplay()
         }
@@ -102,32 +178,32 @@ class CardTextField: UIView {
         translatesAutoresizingMaskIntoConstraints = false
     }
     
-    func onChangeComponentColour(for item: TextFieldComponents, with color: UIColor) {
-        switch item {
-        case .border:
-            textFieldBorderColor = color
-            defaultBorderColor = color
-        case .counter:
-            counterLabel.textColor = color
-            defaultCounterColor = color
-        case .underline:
-            bottomBorder.backgroundColor = color
-            defaultBorderColor = color
-        case .switcher:
-            switcher.onTintColor = color
-            defaultSwitcherColor = color
-        case .placehonder:
-            let attributedPlaceholder = NSAttributedString(string: Constants.textFieldPlaceholder, attributes: [NSAttributedString.Key.foregroundColor: color])
-            textField.attributedPlaceholder = attributedPlaceholder
-            defaultPlacehonderColor = color
-        case .title:
-            titleLabel.textColor = color
-            defaultTitleColor = color
-        case .text:
-            textField.textColor = color
-            defaultTextColor = color
-        }
-    }
+//    func onChangeComponentColour(for item: TextFieldComponents, with color: UIColor) {
+//        switch item {
+//        case .border:
+//            textFieldBorderColor = color
+//            defaultBorderColor = color
+//        case .counter:
+//            counterLabel.textColor = color
+//            defaultCounterColor = color
+//        case .underline:
+//            bottomBorder.backgroundColor = color
+//            defaultBorderColor = color
+//        case .switcher:
+//            switcher.onTintColor = color
+//            defaultSwitcherColor = color
+//        case .placehonder:
+//            let attributedPlaceholder = NSAttributedString(string: Constants.textFieldPlaceholder, attributes: [NSAttributedString.Key.foregroundColor: color])
+//            textField.attributedPlaceholder = attributedPlaceholder
+//            defaultPlacehonderColor = color
+//        case .title:
+//            titleLabel.textColor = color
+//            defaultTitleColor = color
+//        case .text:
+//            textField.textColor = color
+//            defaultTextColor = color
+//        }
+//    }
     
     private func configure() {
         addSubview(textField)
@@ -140,7 +216,7 @@ class CardTextField: UIView {
         
         backgroundColor = .systemBackground
         titleLabel.backgroundColor = .systemBackground
-        bottomBorder.backgroundColor = .systemGreen
+        bottomBorder.backgroundColor = State.inactive.underlineColor
         counterLabel.text = "Count: 0"
         counterLabel.font = UIFont.systemFont(ofSize: 12)
         textField.leftView = switcher
@@ -185,12 +261,12 @@ class CardTextField: UIView {
     }
     
     private func showValidationError() {
-        textFieldBorderColor = .red
+        textFieldBorderColor = State.error.borderColor
         errorMessage.isHidden = false
-        textField.textColor = .red
-        counterLabel.textColor = .red
-        titleLabel.textColor = .red
-        bottomBorder.backgroundColor = .red
+        textField.textColor = State.error.textColor
+        counterLabel.textColor = State.error.counerColor
+        titleLabel.textColor = State.error.titleColor
+        bottomBorder.backgroundColor = State.error.underlineColor
         
         errorMessageHeightAnchor.isActive = false
         UIView.animate(withDuration: 0.1) {
@@ -199,17 +275,33 @@ class CardTextField: UIView {
     }
     
     private func hideValidationError() {
-        textFieldBorderColor = defaultBorderColor
-        textField.textColor = defaultTextColor
-        counterLabel.textColor = defaultCounterColor
-        titleLabel.textColor = defaultTitleColor
-        bottomBorder.backgroundColor = defaultUnderlineColor
+        textFieldBorderColor = State.active.borderColor
+        textField.textColor = State.active.textColor
+        counterLabel.textColor = State.active.counerColor
+        titleLabel.textColor = State.active.titleColor
+        bottomBorder.backgroundColor = State.active.underlineColor
         errorMessage.isHidden = true
         
         errorMessageHeightAnchor.isActive = true
         UIView.animate(withDuration: 0.1) {
             self.layoutIfNeeded()
         }
+    }
+    
+    private func setTextFieldActiveStyle() {
+        textFieldBorderColor = State.active.borderColor
+        textField.textColor = State.active.textColor
+        counterLabel.textColor = State.active.counerColor
+        titleLabel.textColor = State.active.titleColor
+        bottomBorder.backgroundColor = State.active.underlineColor
+    }
+    
+    private func setTextFieldInactiveStyle() {
+        textFieldBorderColor = State.inactive.borderColor
+        textField.textColor = State.inactive.textColor
+        counterLabel.textColor = State.inactive.counerColor
+        titleLabel.textColor = State.inactive.titleColor
+        bottomBorder.backgroundColor = State.inactive.underlineColor
     }
 }
 
@@ -253,6 +345,7 @@ extension CardTextField: UITextFieldDelegate {
         titleLabel.isHidden = false
         textField.placeholder = ""
         hideValidationError()
+        setTextFieldActiveStyle()
         
         bottomBorderHeightConstraintLight.isActive = false
         bottomBorderHeightConstraintBold.isActive = true
@@ -267,6 +360,8 @@ extension CardTextField: UITextFieldDelegate {
         
         if enteredText.count != 16 && !enteredText.isEmpty {
             showValidationError()
+        } else {
+            setTextFieldInactiveStyle()
         }
         
         if enteredText.isEmpty {
